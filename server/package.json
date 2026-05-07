@@ -1,0 +1,17 @@
+{
+  "name": "co-watch-room-server",
+  "version": "2.1.2",
+  "private": true,
+  "description": "WebSocket room server for co-browsing extension",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "dependencies": {
+    "archiver": "5.3.2",
+    "ws": "^8.18.0"
+  }
+}

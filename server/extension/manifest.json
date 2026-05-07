@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "协同浏览",
+  "version": "2.1.2",
+  "description": "小范围房间同步网址与 HTML5 视频播放（熟人自用）；房主跟随标签页换址自动全员跳转",
+  "minimum_chrome_version": "116",
+  "permissions": ["storage", "tabs", "contextMenus", "downloads"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "协同浏览"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["utils.js", "content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}

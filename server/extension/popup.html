@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>协同浏览</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="hero">
+        <h1>协同浏览</h1>
+        <p class="tagline">同一房间一起开网页、同步视频进度</p>
+      </header>
+
+      <section class="card" aria-labelledby="sec-room">
+        <h2 id="sec-room" class="card-title">房间</h2>
+
+        <div class="field">
+          <label class="label" for="serverUrl">WebSocket 服务地址</label>
+          <input type="text" id="serverUrl" placeholder="域名或 IP；需自定义端口时写 主机:端口" autocomplete="off" spellcheck="false" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="displayName">房间内显示名</label>
+          <input type="text" id="displayName" maxlength="32" placeholder="最多 32 字，留空为访客" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label class="label" for="roomPassword">房间密码</label>
+          <input type="text" id="roomPassword" maxlength="128" placeholder="与好友约定相同密码" autocomplete="off" />
+        </div>
+        <button type="button" id="btnEnter" class="btn primary btn-block">连接房间</button>
+
+        <p class="identity-line" id="identityLine" hidden></p>
+
+        <div id="statusError" class="status-banner error" hidden role="alert"></div>
+        <div class="status-panel" id="statusPanel" aria-live="polite">
+          <div class="status-row">
+            <span class="status-k">服务</span>
+            <span id="statusConn" class="status-v">—</span>
+          </div>
+          <div class="status-row">
+            <span class="status-k">房间</span>
+            <span id="statusRoom" class="status-v">—</span>
+          </div>
+          <div class="status-row">
+            <span class="status-k">跟随</span>
+            <span id="statusFollow" class="status-v">—</span>
+          </div>
+        </div>
+        <p id="statusToast" class="status-toast" hidden role="status"></p>
+      </section>
+
+      <section class="card" aria-labelledby="sec-follow">
+        <h2 id="sec-follow" class="card-title">跟随当前标签</h2>
+        <p class="lead">先打开要一起看的标签页，再点下方按钮；当前标签已跟随时可一键取消。全员跳转只影响已跟随的标签。</p>
+        <button type="button" id="btnBind" class="btn primary btn-block">设为跟随</button>
+        <div id="bindInfo" class="bind-info"></div>
+      </section>
+
+      <details class="help">
+        <summary>使用说明</summary>
+        <ul>
+          <li>相同房间密码即同一房间；任意成员可发起全员跳转。</li>
+          <li>首位进房者为房主：播放、暂停、进度、倍速仅房主操作会同步给他人。</li>
+          <li>部分站点使用自定义播放器时，视频同步可能不准确。</li>
+        </ul>
+      </details>
+
+      <details class="help">
+        <summary>调试日志</summary>
+        <p class="lead debug-hint">
+          开启后，扩展后台日志请在 <code>chrome://extensions</code> → 本扩展 →「服务工作进程 / Service worker」中查看；视频页行为请在页面按 F12 打开控制台查看 <code>[co-watch]</code> 前缀。
+        </p>
+        <label class="field debug-row">
+          <input type="checkbox" id="chkDebugLog" />
+          <span>输出调试日志（本地持久化）</span>
+        </label>
+      </details>
+
+      <div class="card nav-panel" id="navPanel" hidden>
+        <h2 class="card-title">全员跳转</h2>
+        <div class="field">
+          <label class="label" for="navUrl">网址</label>
+          <input type="url" id="navUrl" placeholder="https://…" />
+        </div>
+        <button type="button" id="btnNavigate" class="btn primary btn-block">让全员打开此网址</button>
+      </div>
+    </div>
+    <script src="utils.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
