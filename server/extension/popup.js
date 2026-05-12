@@ -55,29 +55,36 @@ function send(action, payload = {}) {
 }
 
 /**
- * 将已存储的 ws/wss 地址显示为「主机名或 IP」；仅当端口不是默认值时才带「:端口」。
- * 默认：ws 为 15777，wss 为 443。
+ * 输入框展示：在「与 normalizeWsUrl 往返一致」的前提下尽量简短（如本机只显示 IP/域名）。
+ * 公网 WSS 等无法靠纯主机名区分默认端口的场景，则显示完整 ws/wss 串。
+ * @param {string} stored
  */
 function formatServerUrlForDisplay(stored) {
   const s = String(stored || '').trim();
   if (!s) return '';
+  const norm = normalizeWsUrl(s);
   try {
-    const u = new URL(s);
-    if (u.protocol !== 'ws:' && u.protocol !== 'wss:') {
-      return s;
+    const u = new URL(norm);
+    if (u.protocol !== 'ws:' && u.protocol !== 'wss:') return s;
+
+    const hasPath = u.pathname !== '/' || u.search || u.hash;
+    if (hasPath) return norm;
+
+    if (u.hostname.includes(':')) return norm;
+
+    if (u.protocol === 'wss:') {
+      const defaultPort = !u.port || u.port === '443';
+      if (!defaultPort) return norm;
+      const short = u.hostname;
+      return normalizeWsUrl(short) === norm ? short : norm;
     }
-    const host = u.hostname;
-    const port = u.port;
-    if (u.protocol === 'ws:') {
-      if (!port || port === '15777') {
-        return host;
-      }
-      return host + ':' + port;
+
+    if (!u.port || u.port === '15777') {
+      const short = u.hostname;
+      return normalizeWsUrl(short) === norm ? short : norm;
     }
-    if (!port || port === '443') {
-      return host;
-    }
-    return host + ':' + port;
+    const short = u.hostname + ':' + u.port;
+    return normalizeWsUrl(short) === norm ? short : norm;
   } catch {
     return s;
   }
@@ -141,7 +148,7 @@ async function refresh() {
   const state = await send('getState');
   if (!state) return;
 
-  const server = state.serverWsUrl || 'ws://127.0.0.1:15777';
+  const server = state.serverWsUrl || DEFAULT_WS;
   el('serverUrl').value = formatServerUrlForDisplay(server);
 
   const room = state.roomId;

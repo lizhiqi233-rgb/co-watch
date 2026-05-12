@@ -4,7 +4,7 @@
 
 仓库地址：<https://github.com/lizhiqi233-rgb/co-watch>
 
-当前版本：**2.1.2**（扩展 `manifest.json` 与服务端 `package.json` 一致）。
+当前版本：**2.1.2a**（扩展 `version_name`；`manifest.json` / `package.json` 技术版本号为 **2.1.2.1**，符合 Chrome 仅允许点分整数的规则）。
 
 ---
 
@@ -58,7 +58,7 @@ npm start
 健康检查：<http://127.0.0.1:15777/health>
 
 打包扩展目录下载（便于分发更新）：<http://127.0.0.1:15777/extension.zip>  
-带版本路径：<http://127.0.0.1:15777/extension-2.1.2.zip>（版本须与 `extension/manifest.json` 中 `version` 一致）。
+带版本路径：<http://127.0.0.1:15777/extension-2.1.2.1.zip>（版本须与 `extension/manifest.json` 中 `version` 一致）。
 
 ---
 
