@@ -1,6 +1,6 @@
 {
   "name": "co-watch-room-server",
-  "version": "2.1.2",
+  "version": "2.1.4",
   "private": true,
   "description": "WebSocket room server for co-browsing extension",
   "main": "index.js",

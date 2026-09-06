@@ -1,0 +1,142 @@
+.lead {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.identity-line {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  color: var(--accent-ink);
+  font-size: 12px;
+  font-weight: 650;
+  background: var(--surface-info);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+}
+
+.status-banner {
+  margin-top: 14px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  border-radius: 10px;
+}
+
+.status-banner.error {
+  color: var(--danger-ink);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+}
+
+.status-panel {
+  margin-top: 14px;
+  padding: 4px 12px;
+  color: var(--muted-strong);
+  font-size: 12px;
+  line-height: 1.5;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+}
+
+.status-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.status-row:last-child {
+  padding-bottom: 9px;
+  border-bottom: none;
+}
+
+.status-row:first-child {
+  padding-top: 9px;
+}
+
+.status-k {
+  flex: 0 0 3em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.status-v {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.status-toast {
+  margin: 10px 0 0;
+  color: var(--accent-ink);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.bind-info {
+  min-height: 1.5em;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.help {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  color: var(--muted);
+  font-size: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.help summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  color: var(--muted-strong);
+  font-weight: 650;
+  cursor: pointer;
+  list-style: none;
+}
+
+.help summary::-webkit-details-marker {
+  display: none;
+}
+
+.help summary::before {
+  display: inline-block;
+  width: 16px;
+  color: var(--accent);
+  font-size: 16px;
+  line-height: 1;
+  content: '+';
+}
+
+.help[open] summary::before {
+  content: '−';
+}
+
+.help summary:hover {
+  color: var(--accent-ink);
+}
+
+.help ul {
+  margin: 10px 0 2px;
+  padding-left: 24px;
+  line-height: 1.65;
+}
+
+.help li {
+  margin-bottom: 5px;
+}
+
+.nav-panel {
+  margin-bottom: 14px;
+}

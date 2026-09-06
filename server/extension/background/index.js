@@ -1,0 +1,19 @@
+importScripts(
+  '../shared/utils.js',
+  'state.js',
+  'heartbeat.js',
+  'navigation.js',
+  'network.js',
+  'tabs.js',
+  'session.js',
+  'roles.js',
+  'protocol.js',
+  'broadcast.js',
+  'connection.js',
+  'runtime/state.js',
+  'runtime/room.js',
+  'runtime/media.js',
+  'runtime/navigation.js',
+  'events/tabs.js',
+  'events/context-menu.js'
+);

@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>协同浏览</title>
-    <link rel="stylesheet" href="popup.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="status.css" />
   </head>
   <body>
     <div class="app">
@@ -17,7 +18,7 @@
 
         <div class="field">
           <label class="label" for="serverUrl">WebSocket 服务地址</label>
-          <input type="text" id="serverUrl" placeholder="域名或 IP；需自定义端口时写 主机:端口" autocomplete="off" spellcheck="false" />
+          <input type="text" id="serverUrl" placeholder="域名或 IP；默认 ws:15777，WSS 请填写 wss://域名" autocomplete="off" spellcheck="false" />
         </div>
 
         <div class="field">
@@ -87,7 +88,10 @@
         <button type="button" id="btnNavigate" class="btn primary btn-block">让全员打开此网址</button>
       </div>
     </div>
-    <script src="utils.js"></script>
-    <script src="popup.js"></script>
+    <script src="../shared/utils.js"></script>
+    <script src="state.js"></script>
+    <script src="render.js"></script>
+    <script src="actions.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
