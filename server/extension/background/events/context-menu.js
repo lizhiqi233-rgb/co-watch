@@ -140,7 +140,6 @@ function runSendToCoWatchSameAsContextMenu(tabId, sendResponse) {
       }
       setStorage({ [STORAGE_KEYS.followedTabId]: tabId }).then(() => {
         const ok = sendNavigateReliable(url, tab.title || '', {
-          skipPlaylistInsert: true,
           roomSyncNavigate: true,
         });
         if (!ok) {
@@ -153,7 +152,6 @@ function runSendToCoWatchSameAsContextMenu(tabId, sendResponse) {
           if (sendResponse) sendResponse({ ok: false });
           return;
         }
-        maybePlaylistNavigateAfterSkipCoWatch(tabId, url);
         notifyFloater(tabId, true);
         if (oldFollowId != null && oldFollowId !== tabId) {
           notifyFloater(oldFollowId, false);

@@ -34,7 +34,7 @@ function handleWsConnection(ws, deps) {
     messageCountInWindow += 1;
     if (messageCountInWindow > config.maxMessagesPerWindow) {
       try {
-        ws.terminate();
+        ws.close(1008, 'rate limit');
       } catch (_) {}
       return false;
     }

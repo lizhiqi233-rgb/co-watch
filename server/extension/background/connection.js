@@ -1,3 +1,11 @@
+function shouldReconnectAfterUnexpectedClose(ev, hadSession, wasEntering) {
+  if (!hadSession && !wasEntering) return false;
+  const code = ev && typeof ev.code === 'number' ? ev.code : 0;
+  if ([1000, 1002, 1003, 1007, 1008, 1009, 1010, 1013].includes(code)) {
+    return false;
+  }
+  return true;
+}
 function connectAnd(run) {
   const generation = ++connectionGeneration;
   getStorage([STORAGE_KEYS.serverWsUrl]).then(async (data) => {
@@ -50,15 +58,20 @@ function connectAnd(run) {
       ws.onclose = (ev) => {
         if (generation !== connectionGeneration || socket !== ws) return;
         const hadSession = !!currentRoomId;
+        const wasEntering = enterRoomPending;
+        const heartbeatReconnect = reconnectAfterHeartbeat;
         stopHeartbeat();
         if (enterRoomPending) {
           enterRoomPending = false;
         }
-        if (reconnectAfterHeartbeat) {
+        if (
+          heartbeatReconnect ||
+          shouldReconnectAfterUnexpectedClose(ev, hadSession, wasEntering)
+        ) {
           reconnectAfterHeartbeat = false;
           pendingDisconnectBanner = null;
           clearWsSessionStateAfterClose();
-          tryReconnectAfterHeartbeatFailure();
+          tryReconnectAfterHeartbeatFailure(heartbeatReconnect ? 'heartbeat' : 'unexpected');
           return;
         }
         clearWsSessionStateAfterClose();
@@ -86,10 +99,6 @@ function connectAnd(run) {
         }
         lastError = banner;
         broadcastState({ lastError: banner });
-      };
-      ws.onerror = () => {
-        if (generation !== connectionGeneration || socket !== ws) return;
-        enterRoomPending = false;
       };
     } catch (e) {
       if (generation !== connectionGeneration) return;

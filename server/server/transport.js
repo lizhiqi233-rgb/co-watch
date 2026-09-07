@@ -48,8 +48,21 @@ function createWebSocketTransports({ server, tlsServer, config, onConnection }) 
       const last = tracker.getLastActivity(ws);
       if (last != null && last >= threshold) return;
       try {
-        ws.terminate();
-      } catch (_) {}
+        ws.close(1001, 'idle timeout');
+        const closeTimer = setTimeout(() => {
+          if (ws.readyState === 3) return;
+          try {
+            ws.terminate();
+          } catch (_) {}
+        }, 1000);
+        if (closeTimer && typeof closeTimer.unref === 'function') {
+          closeTimer.unref();
+        }
+      } catch (_) {
+        try {
+          ws.terminate();
+        } catch (_) {}
+      }
     });
   }, config.idleSweepMs);
 

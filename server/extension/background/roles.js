@@ -63,6 +63,8 @@ function initializeRoomEntry(msg) {
   currentRoomId = msg.roomId;
   currentRole = msg.role;
   clientId = msg.clientId;
+  lastAppliedNavigateKey = '';
+  navigateApplyGeneration += 1;
   applyPlaylistFromServer(msg.playlist);
   if (Array.isArray(msg.members) && msg.members.length) {
     roomMembers = msg.members;

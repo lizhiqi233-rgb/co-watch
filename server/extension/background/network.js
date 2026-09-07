@@ -3,6 +3,21 @@
  * Bare hosts and ws:// addresses use port 15777; wss:// uses port 443.
  * http(s):// inputs are converted to ws(s)://, and URL fragments are removed.
  */
+const DOH_REQUEST_TIMEOUT_MS = 3000;
+function fetchDohWithTimeout(url, options) {
+  const opts = options || {};
+  if (typeof AbortController !== 'function') {
+    return Promise.race([
+      fetch(url, opts),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('DoH request timeout')), DOH_REQUEST_TIMEOUT_MS);
+      }),
+    ]);
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), DOH_REQUEST_TIMEOUT_MS);
+  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
 function normalizeWsUrl(input) {
   const s = (input || '').trim();
   if (!s) return DEFAULT_WS;
@@ -88,7 +103,7 @@ async function resolveHostnameToIpv4ViaDoh(hostname) {
   ];
   for (let e = 0; e < endpoints.length; e++) {
     try {
-      const r = await fetch(endpoints[e](), {
+      const r = await fetchDohWithTimeout(endpoints[e](), {
         headers: { Accept: 'application/dns-json' },
         cache: 'no-store',
       });

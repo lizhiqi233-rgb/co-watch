@@ -59,7 +59,7 @@ server.listen(config.port, () => {
     `GET http://127.0.0.1:${config.port}/extension.zip or /extension-{manifest version}.zip`
   );
   console.log(
-    `idle kick: no message for ${config.idleCloseMs}ms -> terminate (${config.idleSweepMs}ms sweep)`
+    `idle kick: no message for ${config.idleCloseMs}ms -> close 1001 (fallback terminate after 1000ms; ${config.idleSweepMs}ms sweep)`
   );
   console.log(
     `jump desync ${config.jumpDesyncKickMs}ms -> remove client (host promotes next)`

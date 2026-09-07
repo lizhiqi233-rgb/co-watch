@@ -28,7 +28,7 @@ function updateFollowedTabUrl(tabId, url, onFail) {
 
 /**
  * 跟随标签打开目标 URL。
- * @param {{ broadcastNavigate?: boolean }} [opts] broadcastNavigate：服务端全员 navigate 广播；不可仅因「规范化同址」静默跳过（右键发当前页 tab.url 常与成员页同键），同字符串时 reload 以对齐 SPA。
+ * @param {{ broadcastNavigate?: boolean }} [opts] broadcastNavigate: server-wide navigate broadcast; normalized same-URL navigation does not reload, preventing member-page churn from duplicate broadcasts or reliable retries.
  */
 function openFollowedTabAtUrl(tabId, url, opts) {
   if (!isAllowedHttpUrl(url) || typeof tabId !== 'number') return;
@@ -47,10 +47,8 @@ function openFollowedTabAtUrl(tabId, url, opts) {
     const sameKey = !!(tab.url && tabKey === urlKey);
 
     if (broadcast) {
-      if (tab.url === url) {
-        chrome.tabs.reload(tabId, {}, () => {
-          if (chrome.runtime.lastError) onFail();
-        });
+      if (sameKey) {
+        dbg('skip same followed tab URL', { tabId, url: url.slice(0, 160) });
         return;
       }
       updateFollowedTabUrl(tabId, url, onFail);

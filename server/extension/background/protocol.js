@@ -109,15 +109,23 @@ function handleServerMessage(text) {
     const navKey = normalizeUrlKeyForCoWatch(nav);
     // 服务端广播的 navigate 不经 sendNavigateReliable，若不同步键，跟随页 onUpdated 会再发 ws→ navigate，造成重复插入与循环
     lastHostFollowBroadcastKey = navKey;
+    if (navKey === lastAppliedNavigateKey) {
+      dbg('skip duplicate navigate', navKey);
+      return;
+    }
+    lastAppliedNavigateKey = navKey;
+    const applyGeneration = ++navigateApplyGeneration;
     getStorage([STORAGE_KEYS.followedTabId, STORAGE_KEYS.role]).then((data) => {
       const tid = data[STORAGE_KEYS.followedTabId];
       const role = resolveEffectiveRole(data[STORAGE_KEYS.role]);
 
       const applyNavigateToFollowedTab = () => {
+        if (applyGeneration !== navigateApplyGeneration) return;
         setStorage({
           [STORAGE_KEYS.joinReplayUrl]: nav,
           [STORAGE_KEYS.joinResumeVideo]: null,
         }).then(() => {
+          if (applyGeneration !== navigateApplyGeneration) return;
           applyOpenFollowedUrl(
             nav,
             typeof tid === 'number' && tid >= 0 ? tid : undefined,
@@ -129,6 +137,7 @@ function handleServerMessage(text) {
       // 房主也会收到自己发出的 navigate 广播：跟随页已是该地址时勿 update/reload，否则整页重载或打断自动连播
       if (role === 'host' && typeof tid === 'number' && tid >= 0) {
         chrome.tabs.get(tid, (tab) => {
+          if (applyGeneration !== navigateApplyGeneration) return;
           if (chrome.runtime.lastError || !tab || !tab.url) {
             applyNavigateToFollowedTab();
             return;
@@ -138,6 +147,7 @@ function handleServerMessage(text) {
             return;
           }
           if (normalizeUrlKeyForCoWatch(tab.url) === navKey) {
+            if (applyGeneration !== navigateApplyGeneration) return;
             setStorage({
               [STORAGE_KEYS.joinReplayUrl]: nav,
               [STORAGE_KEYS.joinResumeVideo]: null,

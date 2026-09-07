@@ -4,7 +4,7 @@
 
 仓库地址：<https://github.com/lizhiqi233-rgb/co-watch>
 
-当前版本：**服务端 2.1.4 / 扩展 2.2.0**（服务端与扩展版本按各自发布节奏维护）。
+当前版本：**服务端 2.1.4 / 扩展 2.2.2**（服务端与扩展版本按各自发布节奏维护）。
 
 ---
 
@@ -66,7 +66,7 @@ npm start
 健康检查：<http://127.0.0.1:15777/health>
 
 打包扩展目录下载（便于分发更新）：<http://127.0.0.1:15777/extension.zip>  
-带版本路径：<http://127.0.0.1:15777/extension-2.2.0.zip>（版本须与 `extension/manifest.json` 中 `version` 一致）。
+带版本路径：<http://127.0.0.1:15777/extension-2.2.2.zip>（版本须与 `extension/manifest.json` 中 `version` 一致）。
 
 ---
 

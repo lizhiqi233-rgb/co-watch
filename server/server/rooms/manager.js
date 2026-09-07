@@ -262,7 +262,7 @@ class RoomManager {
     });
     this.removeClientFromRoom(roomId, ws);
     try {
-      ws.terminate();
+      ws.close(1008, 'jump desync');
     } catch (_) {}
     return true;
   }

@@ -37,18 +37,22 @@ function clearWsSessionStateAfterClose() {
   currentRole = null;
   clientId = null;
   lastHostFollowBroadcastKey = '';
+  lastAppliedNavigateKey = '';
+  navigateApplyGeneration += 1;
   lastPlaylistTitleSentByUrlKey = new Map();
   pendingJumpRoundReset = false;
 }
 
 /**
- * 心跳失败关闭后：用上次房间密码与显示名再次 enter_room（与手动连接相同路径）。
+ * Rejoin the last room after a heartbeat or unexpected disconnect.
  */
-function tryReconnectAfterHeartbeatFailure() {
+function tryReconnectAfterHeartbeatFailure(reason) {
   getStorage([STORAGE_KEYS.lastRoomKey, STORAGE_KEYS.displayName]).then((data) => {
     const roomKey = String(data[STORAGE_KEYS.lastRoomKey] || '').trim();
     if (!roomKey) {
-      lastError = '连接无响应且未保存房间密码，请手动连接';
+      lastError =
+        (reason === 'unexpected' ? '连接中断' : '连接无响应') +
+        '且未保存房间密码，请手动连接';
       heartbeatReconnectAttempts = 0;
       broadcastState({ lastError });
       return;
@@ -65,8 +69,10 @@ function tryReconnectAfterHeartbeatFailure() {
     heartbeatReconnectAttempts++;
     enterRoomPending = true;
     const displayName = normalizeDisplayName(data[STORAGE_KEYS.displayName] || '');
+    const prefix = reason === 'unexpected' ? '连接中断' : '连接无响应';
     const hint =
-      '连接无响应，正在自动重连（' +
+      prefix +
+      '，正在自动重连（' +
       heartbeatReconnectAttempts +
       '/' +
       HEARTBEAT_RECONNECT_MAX_ATTEMPTS +

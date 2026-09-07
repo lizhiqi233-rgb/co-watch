@@ -7,13 +7,17 @@ let navigateAckTimer = null;
 let navigateAckUrl = null;
 /** @type {string | null} */
 let navigateAckTitle = null;
-/** 右键/侧栏发协同：跳过一次播放列表插入，避免与跟随标签 onUpdated 再次 navigate 重复写库 */
+/** Title-only retries use skip to avoid duplicate playlist insertion. */
 let navigateAckSkipPlaylistInsert = false;
 /** 与 skip 并列：服务端按房主规则更新播放列表（任意成员发起「全员跳转/发送到协同」时亦同） */
 let navigateAckRoomSync = false;
 let navigateSendCount = 0;
 /** 最近一次已成功发出的全员跳转规范化键；用于房主跟标签 onUpdated 去重，及与弹窗/右键发送协同 */
 let lastHostFollowBroadcastKey = '';
+/** Last received room-navigation key; reliable retries must not navigate tabs again. */
+let lastAppliedNavigateKey = '';
+/** Invalidates stale asynchronous tab-navigation callbacks. */
+let navigateApplyGeneration = 0;
 /** 跟随页某 URL 键已随 navigate 上报过的 tab 标题；title 晚于 URL 更新时再发 skip 补标题 */
 let lastPlaylistTitleSentByUrlKey = new Map();
 /** 房主跟随标签 URL 变更后合并再发 navigate，过小易在 SPA 连续 push 时重复广播 */
@@ -80,7 +84,7 @@ function navigateUrlsMatch(a, b) {
  * 发送 navigate 并在未收到 navigate_ack 前按超时重发若干次；收到 ack 则立即停止。
  * 旧版无 ack 的服务端：仅多播几次同 URL，跟随端同址会跳过，兼容不报错。
  * @param {string} [titleOpt] 可选页面标题，供服务端插入播放列表时展示
- * @param {{ skipPlaylistInsert?: boolean, roomSyncNavigate?: boolean }} [opts] skip：首跳不插入；roomSyncNavigate：服务端按房主浏览规则更新列表与已看历史（成员亦适用）
+ * @param {{ skipPlaylistInsert?: boolean, roomSyncNavigate?: boolean }} [opts] skip：仅标题补发使用；roomSyncNavigate：服务端按房主规则更新列表与已看历史（成员亦适用）
  */
 function sendNavigateReliable(url, titleOpt, opts) {
   clearNavigateAckState();
@@ -143,20 +147,4 @@ function sendNavigateReliable(url, titleOpt, opts) {
   }
   armTimer();
   return true;
-}
-
-/**
- * 右键/侧栏发协同时使用 skip 首跳；若跟随页已在目标 URL，handleServerMessage(navigate) 不会 tabs.update，
- * 也就没有 onUpdated → 播放列表永远不会补写。此时再发一次完整 navigate 写入列表（服务端 URL 已存在则只对齐指针）。
- * @param {number} tabId
- * @param {string} url
- */
-function maybePlaylistNavigateAfterSkipCoWatch(tabId, url) {
-  const ukey = normalizeUrlKeyForCoWatch(url);
-  chrome.tabs.get(tabId, (t) => {
-    if (chrome.runtime.lastError || !t || !t.url) return;
-    if (!isAllowedHttpUrl(t.url)) return;
-    if (normalizeUrlKeyForCoWatch(t.url) !== ukey) return;
-    sendNavigateReliable(url, (t.title || '').slice(0, 300), { roomSyncNavigate: true });
-  });
 }
